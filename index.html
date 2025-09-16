@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title></title>
+</head>
+
+<body>
+  
+</body>
+
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Advanced Mini Cyber Security Suite</title>
+<style>
+body { font-family: Arial, sans-serif; background: #f4f4f9; margin: 0; padding: 0; }
+header { background: #4b6cb7; color: white; padding: 20px; text-align: center; }
+.container { padding: 20px; max-width: 800px; margin: auto; }
+section { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+input, textarea, button { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #ccc; }
+button { background: #4b6cb7; color: white; border: none; cursor: pointer; }
+button:hover { background: #3a539b; }
+.result { font-weight: bold; margin-top: 10px; }
+.quiz-score { font-weight: bold; margin-top: 10px; color: green; }
+</style>
+</head>
+<body>
+
+<header>
+<h1>Advanced Mini Cyber Security Suite</h1>
+<p>Protect yourself from unsafe links, phishing emails, and suspicious QR codes</p>
+</header>
+
+<div class="container">
+
+<!-- Link Scanner -->
+<section>
+<h2>Link Scanner</h2>
+<input type="text" id="linkInput" placeholder="Enter URL here">
+<button onclick="scanLink()">Scan Link</button>
+<p id="linkResult" class="result"></p>
+</section>
+
+<!-- Phishing Email Checker -->
+<section>
+<h2>Phishing Email Alert</h2>
+<textarea id="emailInput" rows="5" placeholder="Paste email content here..."></textarea>
+<button onclick="checkEmail()">Check Email</button>
+<p id="emailResult" class="result"></p>
+</section>
+
+<!-- QR Code Checker -->
+<section>
+<h2>QR Code Safety Check</h2>
+<input type="file" id="qrInput" accept="image/*">
+<canvas id="qrCanvas" hidden></canvas>
+<button onclick="scanQR()">Scan QR Code</button>
+<p id="qrResult" class="result"></p>
+</section>
+
+<!-- Security Tips -->
+<section>
+<h2>Security Tips</h2>
+<ul>
+<li>Use strong, unique passwords.</li>
+<li>Always verify links before clicking.</li>
+<li>Avoid public Wi-Fi for sensitive transactions.</li>
+<li>Enable two-factor authentication (2FA) wherever possible.</li>
+</ul>
+</section>
+
+<!-- Gamified Awareness Quiz -->
+<section>
+<h2>Safety Quiz</h2>
+<p id="quizQuestion">Is this link safe? <code>http://secure-login-free.com</code></p>
+<button onclick="checkQuiz(false)">Safe</button>
+<button onclick="checkQuiz(true)">Unsafe</button>
+<p id="quizResult" class="result"></p>
+<p id="quizScore" class="quiz-score"></p>
+</section>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+<script>
+// ===== Link Scanner =====
+const maliciousDomains = ['secure-login-free.com', 'phishing-site.net', 'malware-test.org'];
+function scanLink(){
+    let url = document.getElementById('linkInput').value.trim().toLowerCase();
+    let result = 'Safe';
+    if(!url.startsWith('https://')) result = 'Warning: Not HTTPS';
+    for(let domain of maliciousDomains){
+        if(url.includes(domain)) result = 'Unsafe';
+    }
+    document.getElementById('linkResult').innerText = result;
+}
+
+// ===== Phishing Email Checker =====
+function checkEmail(){
+    let content = document.getElementById('emailInput').value.toLowerCase();
+    let suspiciousWords = ['urgent','password','bank','verify','click here','free'];
+    let score = 0;
+    suspiciousWords.forEach(word => { if(content.includes(word)) score++; });
+    let result = score === 0 ? 'Safe' : `Suspicious (Risk score: ${score}/${suspiciousWords.length})`;
+    document.getElementById('emailResult').innerText = result;
+}
+
+// ===== QR Code Scanner =====
+function scanQR(){
+    let fileInput = document.getElementById('qrInput');
+    if(fileInput.files.length === 0){
+        document.getElementById('qrResult').innerText = 'No file selected.';
+        return;
+    }
+    let file = fileInput.files[0];
+    let reader = new FileReader();
+    reader.onload = function(e){
+        let img = new Image();
+        img.onload = function(){
+            let canvas = document.getElementById('qrCanvas');
+            let ctx = canvas.getContext('2d');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+            let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            let code = jsQR(imageData.data, canvas.width, canvas.height);
+            if(code){
+                document.getElementById('qrResult').innerText = `QR Code Content: ${code.data}`;
+            } else {
+                document.getElementById('qrResult').innerText = 'No QR code found.';
+            }
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+// ===== Interactive Quiz =====
+let quizScore = 0;
+function checkQuiz(userChoice){
+    let correct = true; // link is unsafe
+    if(userChoice === correct){
+        document.getElementById('quizResult').innerText = 'Correct!';
+        quizScore++;
+    } else {
+        document.getElementById('quizResult').innerText = 'Wrong, this link is unsafe.';
+    }
+    document.getElementById('quizScore').innerText = `Total Score: ${quizScore}`;
+}
+</script>
+
+</body>
+</html>
