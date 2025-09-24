@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title></title>
+</head>
+
+<body>
+  
+</body>
+
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cyber Shield 🛡️</title>
+<style>
+body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f4f4f9; color:#333; }
+header { background:#4b6cb7; color:white; text-align:center; padding:20px; position:relative;}
+header h1 { margin:0; }
+header p { margin:5px 0 0; font-size:16px; }
+
+/* Three dots menu */
+.menu-container { position:absolute; top:20px; right:20px; }
+.menu-btn { background:transparent; border:none; color:white; font-size:24px; cursor:pointer; }
+.menu-content { display:none; position:absolute; right:0; background:white; color:#333; border-radius:5px; box-shadow:0 2px 5px rgba(0,0,0,0.3); padding:10px; text-align:right; z-index:1000; }
+.menu-content button { display:block; width:100%; margin:5px 0; padding:5px 10px; border:none; border-radius:4px; cursor:pointer; background:#f0f0f0; }
+.menu-content button:hover { background:#ddd; }
+
+.container { max-width:800px; margin:30px auto; padding:0 20px; }
+section { background:#fff; padding:20px; margin-bottom:20px; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,0.1);}
+input, textarea, button { width:100%; padding:10px; margin:10px 0; border-radius:5px; border:1px solid #ccc; }
+button { background:#4b6cb7; color:white; border:none; cursor:pointer; }
+button:hover { background:#3a539b; }
+.result { font-weight:bold; margin-top:10px; padding:10px; border-radius:6px; }
+.safe { background:#d4edda; color:#155724; }
+.warning { background:#fff3cd; color:#856404; }
+.danger { background:#f8d7da; color:#721c24; }
+.quiz-score { font-weight:bold; margin-top:10px; color:green; }
+video { width:100%; max-height:300px; border-radius:8px; margin-top:10px; }
+</style>
+</head>
+<body>
+
+<header>
+<h1>Cyber Shield 🛡️</h1>
+<p id="header-sub">Protect yourself from Spam, Phishing & Frauds</p>
+
+<div class="menu-container">
+  <button class="menu-btn" id="menuBtn">⋮</button>
+  <div class="menu-content" id="menuContent">
+    <button onclick="login()">Login</button>
+    <button onclick="signup()">Signup</button>
+    <div style="margin-top:5px;">
+      <button onclick="setLanguage('en')">EN</button>
+      <button onclick="setLanguage('hi')">HI</button>
+    </div>
+  </div>
+</div>
+</header>
+
+<div class="container">
+
+<!-- Link Scanner -->
+<section>
+<h2 id="link-title">Link Scanner</h2>
+<input type="text" id="linkInput" placeholder="Enter URL here">
+<button onclick="scanLink()">Scan Link</button>
+<p id="linkResult" class="result"></p>
+</section>
+
+<!-- Phishing Email Checker -->
+<section>
+<h2 id="email-title">Phishing Email Alert</h2>
+<textarea id="emailInput" rows="5" placeholder="Paste email content here..."></textarea>
+<button onclick="checkEmail()">Check Email</button>
+<p id="emailResult" class="result"></p>
+</section>
+
+<!-- QR Code Checker -->
+<section>
+<h2 id="qr-title">QR Code Safety Check</h2>
+<input type="file" id="qrInput" accept="image/*">
+<canvas id="qrCanvas" hidden></canvas>
+<button onclick="scanQR()">Scan QR Code (File)</button>
+<p id="qrResult" class="result"></p>
+
+<button onclick="startCamera()">Scan QR Code (Camera)</button>
+<video id="qrVideo" autoplay></video>
+</section>
+
+<!-- Security Tips -->
+<section>
+<h2 id="tips-title">Security Tips</h2>
+<ul id="tips-list">
+<li>Use strong, unique passwords.</li>
+<li>Always verify links before clicking.</li>
+<li>Avoid public Wi-Fi for sensitive transactions.</li>
+<li>Enable two-factor authentication (2FA) wherever possible.</li>
+</ul>
+</section>
+
+<!-- Gamified Quiz -->
+<section>
+<h2 id="quiz-title">Safety Quiz</h2>
+<p id="quizQuestion">Is this link safe? <code>http://secure-login-free.com</code></p>
+<button onclick="checkQuiz(false)">Safe</button>
+<button onclick="checkQuiz(true)">Unsafe</button>
+<p id="quizResult" class="result"></p>
+<p id="quizScore" class="quiz-score"></p>
+</section>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+<script>
+// ===== Language & Texts =====
+let language = 'en';
+let quizScore = 0;
+
+const texts = {
+en:{
+header:"Protect yourself from Spam, Phishing & Frauds",
+linkTitle:"Link Scanner", emailTitle:"Phishing Email Alert",
+qrTitle:"QR Code Safety Check", tipsTitle:"Security Tips", quizTitle:"Safety Quiz",
+tips:["Never share your OTP with anyone.","Do not click unknown links.","Free gift / lottery messages are usually scams.","Always verify sender before responding."],
+buttons:["Scan Link","Check Email","Scan QR Code (File)","Scan QR Code (Camera)"],
+resultSafe:"✅ Safe!", resultWarning:"⚠️ Warning!", resultDanger:"❌ Unsafe!"
+},
+hi:{
+header:"अपने आप को Spam, Phishing और Fraud से बचाएँ",
+linkTitle:"लिंक जांचें", emailTitle:"फिशिंग ईमेल जांचें",
+qrTitle:"QR कोड सुरक्षा जांच", tipsTitle:"साइबर सुरक्षा सुझाव", quizTitle:"सुरक्षा प्रश्नोत्तरी",
+tips:["कभी भी OTP किसी से साझा न करें।","Unknown links पर क्लिक न करें।","Free gift / lottery messages अक्सर धोखाधड़ी होते हैं।","संदेश भेजने वाले की पहचान हमेशा जाँचें।"],
+buttons:["लिंक स्कैन करें","ईमेल जांचें","QR कोड स्कैन (फाइल)","QR कोड स्कैन (कैमरा)"],
+resultSafe:"✅ सुरक्षित!", resultWarning:"⚠️ चेतावनी!", resultDanger:"❌ असुरक्षित!"
+}
+};
+
+function setLanguage(lang){
+language = lang;
+document.getElementById('header-sub').innerText = texts[lang].header;
+document.getElementById('link-title').innerText = texts[lang].linkTitle;
+document.getElementById('email-title').innerText = texts[lang].emailTitle;
+document.getElementById('qr-title').innerText = texts[lang].qrTitle;
+document.getElementById('tips-title').innerText = texts[lang].tipsTitle;
+document.getElementById('quiz-title').innerText = texts[lang].quizTitle;
+
+let tipsList = document.getElementById('tips-list');
+tipsList.innerHTML = '';
+texts[lang].tips.forEach(t=>{
+let li=document.createElement('li'); li.innerText=t; tipsList.appendChild(li);
+});
+document.getElementById('linkResult').innerText=''; 
+document.getElementById('emailResult').innerText=''; 
+document.getElementById('qrResult').innerText='';
+}
+
+// ===== Three dots menu =====
+const menuBtn = document.getElementById('menuBtn');
+const menuContent = document.getElementById('menuContent');
+
+menuBtn.addEventListener('click', (e)=>{
+  e.stopPropagation();
+  menuContent.style.display = menuContent.style.display==='block'?'none':'block';
+});
+document.addEventListener('click', ()=>{ menuContent.style.display='none'; });
+menuContent.addEventListener('click', (e)=>{ e.stopPropagation(); });
+
+function login(){ alert('Login clicked'); }
+function signup(){ alert('Signup clicked'); }
+
+// ===== Link Scanner =====
+const maliciousDomains = ['secure-login-free.com','phishing-site.net','malware-test.org'];
+function scanLink(){
+let url = document.getElementById('linkInput').value.trim().toLowerCase();
+let result = texts[language].resultSafe, className='safe';
+if(!url.startsWith('https://')){result=texts[language].resultWarning; className='warning';}
+for(let domain of maliciousDomains){ if(url.includes(domain)){result=texts[language].resultDanger; className='danger';}}
+let el=document.getElementById('linkResult'); el.innerText=result; el.className='result '+className;
+}
+
+// ===== Phishing Email Checker =====
+function checkEmail(){
+let content=document.getElementById('emailInput').value.toLowerCase();
+let suspiciousWords=['urgent','password','bank','verify','click here','free'],score=0;
+suspiciousWords.forEach(word=>{if(content.includes(word)) score++;});
+let result=score===0?texts[language].resultSafe:`${texts[language].resultDanger} (Risk: ${score}/${suspiciousWords.length})`;
+let className=score===0?'safe':'danger';
+let el=document.getElementById('emailResult'); el.innerText=result; el.className='result '+className;
+}
+
+// ===== QR Code Scanner (File) =====
+function scanQR(){
+let file=document.getElementById('qrInput').files[0]; if(!file){document.getElementById('qrResult').innerText='No file selected.'; return;}
+let reader=new FileReader();
+reader.onload=function(e){
+let img=new Image(); img.onload=function(){
+let canvas=document.getElementById('qrCanvas'); let ctx=canvas.getContext('2d');
+canvas.width=img.width; canvas.height=img.height; ctx.drawImage(img,0,0);
+let imageData=ctx.getImageData(0,0,canvas.width,canvas.height);
+let code=jsQR(imageData.data,canvas.width,canvas.height);
+let el=document.getElementById('qrResult'); if(code){el.innerText=`QR Code Content: ${code.data}`; el.className='result safe';} 
+else {el.innerText='No QR code found.'; el.className='result warning';}
+}; img.src=e.target.result;
+}; reader.readAsDataURL(file);
+}
+
+// ===== QR Code Scanner (Camera) =====
+let video=document.getElementById('qrVideo'), scanning=false, videoStream;
+function startCamera(){
+navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"}})
+.then(stream=>{videoStream=stream; video.srcObject=stream; video.setAttribute("playsinline", true); video.play(); scanning=true;
+video.onloadedmetadata = ()=>{ scanCamera(); }; })
+.catch(err=>{alert('Camera access denied or not available.'); console.error(err);});
+}
+function scanCamera(){
+if(!scanning) return;
+if(video.readyState !== video.HAVE_ENOUGH_DATA){ requestAnimationFrame(scanCamera); return; }
+let canvas=document.createElement('canvas'); canvas.width=video.videoWidth; canvas.height=video.videoHeight;
+let ctx=canvas.getContext('2d'); ctx.drawImage(video,0,0,canvas.width,canvas.height);
+let imageData=ctx.getImageData(0,0,canvas.width,canvas.height);
+let code=jsQR(imageData.data,canvas.width,canvas.height);
+let el=document.getElementById('qrResult');
+if(code){el.innerText=`QR Code Content: ${code.data}`; el.className='result safe'; scanning=false; videoStream.getTracks().forEach(t=>t.stop()); return;}
+requestAnimationFrame(scanCamera);
+}
+
+// ===== Quiz =====
+function checkQuiz(userChoice){
+let correct=true; // link is unsafe
+let el=document.getElementById('quizResult'); if(userChoice===correct){el.innerText='Correct!'; el.className='result safe'; quizScore++;} 
+else{el.innerText='Wrong, this link is unsafe.'; el.className='result danger';} 
+document.getElementById('quizScore').innerText=`Total Score: ${quizScore}`;
+}
+
+// Initialize
+setLanguage('en');
+</script>
+</body>
+</html>
